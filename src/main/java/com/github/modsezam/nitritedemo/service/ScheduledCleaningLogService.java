@@ -15,10 +15,9 @@ public class ScheduledCleaningLogService {
     @Autowired
     NitriteLogRepository nitriteLogRepository;
 
-    @Scheduled(fixedDelay = 10_000L, initialDelay = 10_000L)
+    @Scheduled(fixedDelay = 100_000L, initialDelay = 100_000L)
     public void scheduledCleaningLog(){
-        nitriteLogRepository.remove(logCleaningTime);
-
+        nitriteLogRepository.cleanOldLogRecord(logCleaningTime);
     }
 
 }

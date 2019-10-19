@@ -5,6 +5,7 @@ import com.github.modsezam.nitritedemo.model.db.Log;
 import lombok.extern.slf4j.Slf4j;
 import org.dizitart.no2.Nitrite;
 import org.dizitart.no2.WriteResult;
+import org.dizitart.no2.exceptions.NitriteIOException;
 import org.dizitart.no2.objects.Cursor;
 import org.dizitart.no2.objects.ObjectFilter;
 import org.dizitart.no2.objects.ObjectRepository;
@@ -32,8 +33,7 @@ public class NitriteLogRepository {
 
     private ObjectRepository<Log> repository;
 
-    @EventListener(ApplicationReadyEvent.class)
-    public void nitriteInitialization() throws IOException {
+    public void nitriteInitialization() throws NitriteIOException {
         String tempDir = System.getProperty("java.io.tmpdir");
         String path = tempDir + logRepositoryName + ".db";
 
@@ -55,7 +55,7 @@ public class NitriteLogRepository {
         log.info("Create an object repository based on class {}", Log.class.getCanonicalName());
     }
 
-    public void insertNewLog(String logText) {
+    public void insertNewLogRecord(String logText) {
         Log newLog = new Log(logText, System.currentTimeMillis());
         repository.insert(newLog);
         log.info("Insert new log to data base: {}", logText);
@@ -69,7 +69,7 @@ public class NitriteLogRepository {
         }
     }
 
-    public void remove(long logCleaningTime){
+    public void cleanOldLogRecord(long logCleaningTime){
         ObjectFilter objectFilter = ObjectFilters.lte("logDate", (System.currentTimeMillis() - (logCleaningTime * 1000L)));
         WriteResult logDate = repository.remove(objectFilter);
         int affectedCount = logDate.getAffectedCount();

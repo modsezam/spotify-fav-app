@@ -3,7 +3,6 @@ package com.github.modsezam.nitritedemo.controller;
 import com.github.modsezam.nitritedemo.repository.NitriteLogRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -32,13 +31,13 @@ public class LogController {
 
     @GetMapping("/insert/{logText}")
     public String insertLog(@PathVariable("logText")String newLog){
-        nitriteLogRepository.insertNewLog(newLog);
+        nitriteLogRepository.insertNewLogRecord(newLog);
         return "index";
     }
 
     @GetMapping("/remove")
     public String removeLog(){
-        nitriteLogRepository.remove(10_000);
+        nitriteLogRepository.cleanOldLogRecord(10_000);
         return "index";
     }
 

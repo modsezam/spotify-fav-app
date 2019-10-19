@@ -11,6 +11,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.time.LocalDateTime;
+import java.util.Objects;
+
 @Slf4j
 @Service
 public class SpotifyAuthorizationService {
@@ -20,19 +23,29 @@ public class SpotifyAuthorizationService {
     @Autowired
     private SpotifyTokenHolder spotifyTokenHolder;
 
+    @Autowired
+    private LogService logService;
+
     public ResponseEntity<SpotifyAuthorizationToken> generateToken() {
         String spotifyApiUrl = "https://accounts.spotify.com/api/token";
-        log.info("Get url: " + spotifyApiUrl);
         RestTemplate rest = new RestTemplate();
-        ResponseEntity<SpotifyAuthorizationToken> resp = rest.exchange(spotifyApiUrl,
+        ResponseEntity<SpotifyAuthorizationToken> responseEntity = rest.exchange(spotifyApiUrl,
                 HttpMethod.POST,
                 httpFrameComposer.getAuthorizationEntity(),
                 SpotifyAuthorizationToken.class);
-        if (resp.getStatusCode() == HttpStatus.OK) {
-            SpotifyAuthorizationToken token = resp.getBody();
-            spotifyTokenHolder.setToken(token);
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            SpotifyAuthorizationToken token = responseEntity.getBody();
+            spotifyTokenHolder.setToken(Objects.requireNonNull(token).getAccess_token());
+            spotifyTokenHolder.setExpiredDateTime(LocalDateTime.now().plusSeconds(token.getExpires_in()));
+            log.info("The correct token data has been retrieved from Spotify");
+            logService.insertRecord("The correct token data has been retrieved from Spotify");
+        } else {
+            log.warn("There is a problem with token request data. Http status code: {}",
+                    responseEntity.getStatusCodeValue());
+            logService.insertRecord("There is a problem with token request data.");
         }
-        return resp;
+        return responseEntity;
     }
 
 

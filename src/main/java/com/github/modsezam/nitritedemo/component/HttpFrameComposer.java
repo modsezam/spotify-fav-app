@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
+import java.time.LocalDateTime;
+import java.util.Optional;
+
 
 @Slf4j
 @Component
@@ -39,7 +42,7 @@ public class HttpFrameComposer {
 
     public HttpEntity getAuthorizationTokenEntity() {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", "Bearer " + spotifyTokenHolder.getToken().getAccess_token());
+        headers.add("Authorization", "Bearer " + spotifyTokenHolder.getToken());
 
         return new HttpEntity(headers);
     }
