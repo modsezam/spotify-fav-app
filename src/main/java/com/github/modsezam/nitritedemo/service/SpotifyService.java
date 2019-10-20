@@ -30,8 +30,45 @@ public class SpotifyService {
     @Autowired
     private LogService logService;
 
-    public ResponseEntity<SpotifyModel> getTrackList(String query, int limit, int offset, String market ){
 
+    public ResponseEntity<SpotifyModel> getTrackList(String query, int limit, int offset, String market ){
+        checkSpotifyToken();
+        String url = "https://api.spotify.com/v1/search?q=" + query +
+                "&type=track&limit=" + limit +
+                "&offset=" + offset +
+                "&market=" + market;
+        ResponseEntity<SpotifyModel> responseEntity = getSpotifyModelResponseEntity(url);
+        return responseEntity;
+    }
+
+
+    public ResponseEntity<SpotifyModel> getTrackListFromQuery(String query){
+        checkSpotifyToken();
+        ResponseEntity<SpotifyModel> responseEntity = getSpotifyModelResponseEntity(query);
+        return responseEntity;
+    }
+
+
+    private ResponseEntity<SpotifyModel> getSpotifyModelResponseEntity(String query) {
+        RestTemplate rest = new RestTemplate();
+        ResponseEntity<SpotifyModel> responseEntity = rest.exchange(query,
+                HttpMethod.GET,
+                httpFrameComposer.getAuthorizationTokenEntity(),
+                SpotifyModel.class);
+
+        if (responseEntity.getStatusCode() == HttpStatus.OK) {
+            log.info("The correct track request data has been retrieved from Spotify");
+            logService.insertRecord("The correct track request data has been retrieved from Spotify");
+        } else {
+            log.error("There is a problem with track request data. Http status code: {}",
+                    responseEntity.getStatusCodeValue());
+            logService.insertRecord("There is a problem with track request data.");
+        }
+        return responseEntity;
+    }
+
+
+    private void checkSpotifyToken() {
         Optional<LocalDateTime> expiredDateTime = spotifyTokenHolder.getExpiredDateTime();
         if (expiredDateTime.isPresent()){
             LocalDateTime expiredTokenDataTime = expiredDateTime.get();
@@ -48,28 +85,7 @@ public class SpotifyService {
             logService.insertRecord("No token generated. Get new token.");
             spotifyAuthorizationService.generateToken();
         }
-
-        String url = "https://api.spotify.com/v1/search?q=" + query +
-                "&type=track&limit=" + limit +
-                "&offset=" + offset +
-                "&market=" + market;
-
-        RestTemplate rest = new RestTemplate();
-        ResponseEntity<SpotifyModel> responseEntity = rest.exchange(url,
-                HttpMethod.GET,
-                httpFrameComposer.getAuthorizationTokenEntity(),
-                SpotifyModel.class);
-
-        if (responseEntity.getStatusCode() == HttpStatus.OK){
-            log.info("The correct track request data has been retrieved from Spotify");
-            logService.insertRecord("The correct track request data has been retrieved from Spotify");
-        } else {
-            log.error("There is a problem with track request data. Http status code: {}",
-                    responseEntity.getStatusCodeValue());
-            logService.insertRecord("There is a problem with track request data.");
-        }
-
-        return responseEntity;
     }
+
 
 }

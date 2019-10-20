@@ -10,7 +10,7 @@
 
 <div class="content-container">
     <div class="container">
-        <div class="row col-12 my-5">
+        <div class="row col-12 mt-5">
 
 
 <!--            <div class="row" th:each="track : ${trackList.getItems()}">-->
@@ -25,7 +25,6 @@
                     <th scope="col">Track name</th>
                     <th scope="col">Album</th>
                     <th scope="col">Artist</th>
-                    <th scope="col">Artist</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -37,16 +36,15 @@
                 </tr>
                 </tbody>
             </table>
+        </div>
 
-
-            <div th:if="${trackList.getTotal()/trackList.getLimit() > 0}" class="pagination"
-                 th:each="pageNumber : ${trackList.getTotal()/trackList.getLimit()}">
-                <a th:href="@{/spotify/search/tracks(page=${pageNumber})}"
-                   th:text=${pageNumber}
-                   th:class="${pageNumber==trackList.getTotal()/trackList.getLimit() + 1} ? active"></a>
+        <div class="row col-12 d-flex justify-content-center my-3">
+            <div class="col-2">
+                <a th:if="${trackList.getPrevious() != null}" th:href="@{/spotify/search/query(q=${trackList.getPrevious()})}">prev page</a>
             </div>
-
-
+            <div class="col-2">
+                <a th:if="${trackList.getNext() != null}" th:href="@{/spotify/search/query(q=${trackList.getNext()})}">next page</a>
+            </div>
         </div>
     </div>
 </div>

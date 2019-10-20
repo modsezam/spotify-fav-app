@@ -29,7 +29,7 @@ public class Tracks {
     @JsonProperty("offset")
     private Integer offset;
     @JsonProperty("previous")
-    private Object previous;
+    private String previous;
     @JsonProperty("total")
     private Integer total;
     @JsonIgnore
@@ -86,12 +86,12 @@ public class Tracks {
     }
 
     @JsonProperty("previous")
-    public Object getPrevious() {
+    public String getPrevious() {
         return previous;
     }
 
     @JsonProperty("previous")
-    public void setPrevious(Object previous) {
+    public void setPrevious(String previous) {
         this.previous = previous;
     }
 
