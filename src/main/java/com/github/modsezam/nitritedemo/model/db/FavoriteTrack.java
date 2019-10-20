@@ -14,7 +14,8 @@ import java.io.Serializable;
 public class FavoriteTrack implements Serializable {
 
     @Id
-    private Long id;
+    private String id;
+
     private Item item;
 
 }

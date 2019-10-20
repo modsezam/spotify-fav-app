@@ -1,6 +1,6 @@
 package com.github.modsezam.nitritedemo.service;
 
-import com.github.modsezam.nitritedemo.repository.NitriteLogRepository;
+import com.github.modsezam.nitritedemo.repository.NitriteRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -13,11 +13,11 @@ public class ScheduledCleaningLogService {
     private long logCleaningTime;
 
     @Autowired
-    NitriteLogRepository nitriteLogRepository;
+    NitriteRepository nitriteRepository;
 
     @Scheduled(fixedDelay = 100_000L, initialDelay = 100_000L)
     public void scheduledCleaningLog(){
-        nitriteLogRepository.cleanOldLogRecord(logCleaningTime);
+        nitriteRepository.cleanOldLogRecord(logCleaningTime);
     }
 
 }

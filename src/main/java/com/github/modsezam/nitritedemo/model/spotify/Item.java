@@ -31,7 +31,7 @@ public class Item {
     @JsonProperty("album")
     private Album album;
     @JsonProperty("artists")
-    private List<Artist_> artists = null;
+    private List<Artist> artists = null;
     @JsonProperty("disc_number")
     private Integer discNumber;
     @JsonProperty("duration_ms")
@@ -41,7 +41,7 @@ public class Item {
     @JsonProperty("external_ids")
     private ExternalIds externalIds;
     @JsonProperty("external_urls")
-    private ExternalUrls___ externalUrls;
+    private ExternalUrls externalUrls;
     @JsonProperty("href")
     private String href;
     @JsonProperty("id")
@@ -65,6 +65,8 @@ public class Item {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    private Boolean isFavorite;
+
     @JsonProperty("album")
     public Album getAlbum() {
         return album;
@@ -76,12 +78,12 @@ public class Item {
     }
 
     @JsonProperty("artists")
-    public List<Artist_> getArtists() {
+    public List<Artist> getArtists() {
         return artists;
     }
 
     @JsonProperty("artists")
-    public void setArtists(List<Artist_> artists) {
+    public void setArtists(List<Artist> artists) {
         this.artists = artists;
     }
 
@@ -126,12 +128,12 @@ public class Item {
     }
 
     @JsonProperty("external_urls")
-    public ExternalUrls___ getExternalUrls() {
+    public ExternalUrls getExternalUrls() {
         return externalUrls;
     }
 
     @JsonProperty("external_urls")
-    public void setExternalUrls(ExternalUrls___ externalUrls) {
+    public void setExternalUrls(ExternalUrls externalUrls) {
         this.externalUrls = externalUrls;
     }
 
@@ -245,4 +247,11 @@ public class Item {
         this.additionalProperties.put(name, value);
     }
 
+    public Boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
+    }
 }

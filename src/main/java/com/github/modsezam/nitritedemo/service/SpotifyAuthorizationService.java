@@ -39,11 +39,11 @@ public class SpotifyAuthorizationService {
             spotifyTokenHolder.setToken(Objects.requireNonNull(token).getAccess_token());
             spotifyTokenHolder.setExpiredDateTime(LocalDateTime.now().plusSeconds(token.getExpires_in()));
             log.info("The correct token data has been retrieved from Spotify");
-            logService.insertRecord("The correct token data has been retrieved from Spotify");
+            logService.insertLogRecord("The correct token data has been retrieved from Spotify");
         } else {
             log.warn("There is a problem with token request data. Http status code: {}",
                     responseEntity.getStatusCodeValue());
-            logService.insertRecord("There is a problem with token request data.");
+            logService.insertLogRecord("There is a problem with token request data.");
         }
         return responseEntity;
     }

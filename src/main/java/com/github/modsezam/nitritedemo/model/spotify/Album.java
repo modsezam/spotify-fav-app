@@ -28,7 +28,7 @@ public class Album {
     @JsonProperty("artists")
     private List<Artist> artists = null;
     @JsonProperty("external_urls")
-    private ExternalUrls_ externalUrls;
+    private ExternalUrls externalUrls;
     @JsonProperty("href")
     private String href;
     @JsonProperty("id")
@@ -71,12 +71,12 @@ public class Album {
     }
 
     @JsonProperty("external_urls")
-    public ExternalUrls_ getExternalUrls() {
+    public ExternalUrls getExternalUrls() {
         return externalUrls;
     }
 
     @JsonProperty("external_urls")
-    public void setExternalUrls(ExternalUrls_ externalUrls) {
+    public void setExternalUrls(ExternalUrls externalUrls) {
         this.externalUrls = externalUrls;
     }
 

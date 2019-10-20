@@ -31,6 +31,8 @@ public class Artist {
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
 
+    private Boolean isFavorite;
+
     @JsonProperty("external_urls")
     public ExternalUrls getExternalUrls() {
         return externalUrls;
@@ -101,4 +103,11 @@ public class Artist {
         this.additionalProperties.put(name, value);
     }
 
+    public Boolean getFavorite() {
+        return isFavorite;
+    }
+
+    public void setFavorite(Boolean favorite) {
+        isFavorite = favorite;
+    }
 }

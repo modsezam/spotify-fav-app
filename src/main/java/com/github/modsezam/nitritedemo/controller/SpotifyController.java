@@ -1,6 +1,9 @@
 package com.github.modsezam.nitritedemo.controller;
 
+import com.github.modsezam.nitritedemo.model.db.FavoriteTrack;
+import com.github.modsezam.nitritedemo.model.spotify.Item;
 import com.github.modsezam.nitritedemo.model.spotify.SpotifyModel;
+import com.github.modsezam.nitritedemo.service.DatabaseService;
 import com.github.modsezam.nitritedemo.service.LogService;
 import com.github.modsezam.nitritedemo.service.SpotifyService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,7 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Objects;
+import java.util.*;
+import java.util.stream.Stream;
 
 @Slf4j
 @Controller
@@ -26,26 +30,42 @@ public class SpotifyController {
     @Autowired
     private LogService logService;
 
+    @Autowired
+    private DatabaseService databaseService;
+
     @Value("${page.limit-result}")
     private int pageLimitResult;
 
-    private ResponseEntity<SpotifyModel> spotifyModelResponse;
+//    private ResponseEntity<SpotifyModel> spotifyModelResponse;
+    private SpotifyModel spotifyModelResp;
+    
+    private String currentQuery;
+
+    private Set<String> favoriteTrackListById;
+
+    public SpotifyController() {
+        favoriteTrackListById = new HashSet<>();
+    }
 
     @GetMapping("/search")
     public String getIndexSearchPage() {
         log.info("User get index search page");
-        logService.insertRecord("User get index search page");
+        logService.insertLogRecord("User get index search page");
         return "index";
     }
 
     @GetMapping("/search/tracks")
     public String callGet(Model model,
-                          @RequestParam(name = "q") String question) {
-        log.info("Get track search request q={}", question);
-        logService.insertRecord("Get track search request");
+                          @RequestParam(name = "q") String query) {
+        
+        log.info("Get track search request q={}", query);
+        logService.insertLogRecord("Get track search request");
 
-        spotifyModelResponse = spotifyService.getTrackList(question, pageLimitResult, 0, "PL");
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponse.getBody()).getTracks());
+        spotifyModelResp = spotifyService.getTrackList(query, pageLimitResult, 0, "PL").getBody();
+        spotifyModelResp = databaseService.checkFavoritesTrack(spotifyModelResp);
+
+
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
         return "track-list";
     }
 
@@ -53,23 +73,86 @@ public class SpotifyController {
     public String getQuery(Model model,
                           @RequestParam(name = "q") String query) {
         log.info("Get track search request from query {}", query);
-        logService.insertRecord("Get track search request from query");
+        logService.insertLogRecord("Get track search request from query");
+        this.currentQuery = query;
 
-        spotifyModelResponse = spotifyService.getTrackListFromQuery(query);
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponse.getBody()).getTracks());
+        spotifyModelResp = spotifyService.getTrackListFromQuery(query).getBody();
+        spotifyModelResp = databaseService.checkFavoritesTrack(spotifyModelResp);
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
         return "track-list";
     }
 
-    @GetMapping("/add")
+    @GetMapping("/add/track")
     public String addToFavorite(Model model,
                            @RequestParam(name = "id") String id) {
-        log.info("Add track id {} to favorite", id);
-        logService.insertRecord("Add track to favorites");
+        log.info("Adding track id {} to favorite", id);
+        logService.insertLogRecord("Adding track to favorites");
 
-//        spotifyModelResponse = spotifyService.getTrackListFromQuery(query);
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponse.getBody()).getTracks());
+
+        Optional<Item> itemOptional = Objects.requireNonNull(spotifyModelResp).getTracks().getItems()
+                .stream()
+                .filter(item -> item.getId().equals(id))
+                .findFirst();
+        if (itemOptional.isPresent()){
+            databaseService.insertNewFavoriteTrackRecord(itemOptional.get());
+            log.info("Add track id {} to database", id);
+            logService.insertLogRecord("Add track to database");
+        } else {
+            log.warn("Database adding error track id {} to favorite", id);
+            logService.insertLogRecord("Database adding error to favorite");
+        }
+
+        spotifyModelResp = databaseService.checkFavoritesTrack(spotifyModelResp);
+
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
         return "track-list";
     }
 
+    @GetMapping("/remove/track")
+    public String deleteFromFavorite(Model model,
+                           @RequestParam(name = "id") String id) {
+        log.info("Deleting track id {} from favorite", id);
+        logService.insertLogRecord("Deleting track from favorite");
+
+        int nuderOfDeletedRecords = databaseService.deleteTrackByIdFromFavorite(id);
+        if (nuderOfDeletedRecords == 1){
+            log.info("Tack id {} has been removed from favorite", id);
+            logService.insertLogRecord("Tack has been removed from favorite");
+        } else {
+            log.warn("Tack id {} deletion error from favorites", id);
+            logService.insertLogRecord("Tack deletion error from favorites");
+        }
+
+        Objects.requireNonNull(spotifyModelResp).getTracks().getItems()
+                .stream()
+                .filter(item -> item.getId().equals(id))
+                .forEach(item -> item.setFavorite(null));
+
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
+        return "track-list";
+    }
+
+    @GetMapping("/find/tracks")
+    public String findAllTracks(Model model) {
+        log.info("Find all tracks in database");
+        logService.insertLogRecord("Find all tracks in database");
+        favoriteTrackListById = databaseService.getAllIdTracks();
+
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
+
+        return "track-list";
+    }
+
+    @GetMapping("/favorites")
+    public String getAllFavoriteTracks(Model model) {
+        log.info("Get all favorites tracks in database");
+        logService.insertLogRecord("Get all favorites tracks in database");
+
+        spotifyModelResp = databaseService.getAllFavoritesTracks();
+
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp.getTracks()));
+
+        return "track-list";
+    }
 
 }

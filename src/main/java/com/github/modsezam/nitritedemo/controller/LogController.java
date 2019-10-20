@@ -1,45 +1,38 @@
 package com.github.modsezam.nitritedemo.controller;
 
-import com.github.modsezam.nitritedemo.repository.NitriteLogRepository;
+import com.github.modsezam.nitritedemo.model.db.Log;
+import com.github.modsezam.nitritedemo.service.LogService;
 import lombok.extern.slf4j.Slf4j;
+import org.dizitart.no2.objects.Cursor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Slf4j
 @Controller
 public class LogController {
 
-
-    //poprawić i dodać serwis!!!
     @Autowired
-    NitriteLogRepository nitriteLogRepository;
+    private LogService logService;
 
-    @GetMapping("/")
-    public String getLog(){
-        System.out.println("get log ");
-        log.info("eko ajfdkjaf");
-        return "index";
+    @GetMapping("/logs")
+    public String getLog(Model model){
+        log.info("Open page with log");
+        logService.insertLogRecord("Open page with logs");
+        Cursor<Log> logs = logService.getLogs();
+        List<Log> logList = new ArrayList<>();
+        for (Log singleLog : logs) {
+            logList.add(singleLog);
+        }
+        model.addAttribute("logList", logList);
+        return "log-list";
     }
 
-    @GetMapping("/test")
-    public String getLog2(){
-        nitriteLogRepository.test2();
-        return "index";
-    }
 
-    @GetMapping("/insert/{logText}")
-    public String insertLog(@PathVariable("logText")String newLog){
-        nitriteLogRepository.insertNewLogRecord(newLog);
-        return "index";
-    }
-
-    @GetMapping("/remove")
-    public String removeLog(){
-        nitriteLogRepository.cleanOldLogRecord(10_000);
-        return "index";
-    }
 
 
 
