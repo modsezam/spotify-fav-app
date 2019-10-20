@@ -58,7 +58,7 @@ public class NitriteLogRepository {
     public void insertNewLogRecord(String logText) {
         Log newLog = new Log(logText, System.currentTimeMillis());
         repository.insert(newLog);
-        log.info("Insert new log to data base: {}", logText);
+        log.debug("Insert new log to data base: {}", logText);
     }
 
     public void test2() {

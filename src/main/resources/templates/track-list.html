@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <th:block th:replace="fragments :: styleLinks" th:remove="tag"></th:block>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<th:block th:replace="fragments :: navigator" th:remove="tag"></th:block>
+
+<div class="content-container">
+    <div class="container">
+        <div class="row col-12 my-5">
+
+
+<!--            <div class="row" th:each="track : ${trackList.getItems()}">-->
+<!--                <p th:text="${track.getName()}"></p><br>-->
+<!--            </div>-->
+
+
+            <table class="table table-striped">
+                <thead>
+                <tr>
+                    <th scope="col">id</th>
+                    <th scope="col">Track name</th>
+                    <th scope="col">Album</th>
+                    <th scope="col">Artist</th>
+                    <th scope="col">Artist</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr  th:each="track : ${trackList.getItems()}">
+                    <td th:text="${track.getId()}">1</td>
+                    <td th:text="${track.getName()}">Mark</td>
+                    <td th:text="${track.getAlbum().getName()}"></td>
+                    <td th:text="${track.getArtists().get(0).getName()}"></td>
+                </tr>
+                </tbody>
+            </table>
+
+
+            <div th:if="${trackList.getTotal()/trackList.getLimit() > 0}" class="pagination"
+                 th:each="pageNumber : ${trackList.getTotal()/trackList.getLimit()}">
+                <a th:href="@{/spotify/search/tracks(page=${pageNumber})}"
+                   th:text=${pageNumber}
+                   th:class="${pageNumber==trackList.getTotal()/trackList.getLimit() + 1} ? active"></a>
+            </div>
+
+
+        </div>
+    </div>
+</div>
+
+
+</div>
+
+<th:block th:replace="fragments :: footer" th:remove="tag"></th:block>
+<th:block th:replace="fragments :: jsScripts" th:remove="tag"></th:block>
+</body>
+</html>
