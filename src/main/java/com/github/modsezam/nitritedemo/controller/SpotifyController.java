@@ -36,9 +36,9 @@ public class SpotifyController {
     @Value("${page.limit-result}")
     private int pageLimitResult;
 
-//    private ResponseEntity<SpotifyModel> spotifyModelResponse;
-    private SpotifyModel spotifyModelResp;
-    
+    //    private SpotifyModel spotifyModelResp;
+    ResponseEntity<SpotifyModel> spotifyModelResponseEntity
+
     private String currentQuery;
 
     private Set<String> favoriteTrackListById;
@@ -57,11 +57,11 @@ public class SpotifyController {
     @GetMapping("/search/tracks")
     public String callGet(Model model,
                           @RequestParam(name = "q") String query) {
-        
+
         log.info("Get track search request q={}", query);
         logService.insertLogRecord("Get track search request");
 
-        spotifyModelResp = spotifyService.getTrackList(query, pageLimitResult, 0, "PL").getBody();
+        ResponseEntity<SpotifyModel> spotifyModelResponseEntity = spotifyService.getTrackList(query, pageLimitResult, 0, "PL");
         spotifyModelResp = databaseService.checkFavoritesTrack(spotifyModelResp);
 
 
@@ -71,7 +71,7 @@ public class SpotifyController {
 
     @GetMapping("/search/query")
     public String getQuery(Model model,
-                          @RequestParam(name = "q") String query) {
+                           @RequestParam(name = "q") String query) {
         log.info("Get track search request from query {}", query);
         logService.insertLogRecord("Get track search request from query");
         this.currentQuery = query;
@@ -84,7 +84,7 @@ public class SpotifyController {
 
     @GetMapping("/add/track")
     public String addToFavorite(Model model,
-                           @RequestParam(name = "id") String id) {
+                                @RequestParam(name = "id") String id) {
         log.info("Adding track id {} to favorite", id);
         logService.insertLogRecord("Adding track to favorites");
 
@@ -93,7 +93,7 @@ public class SpotifyController {
                 .stream()
                 .filter(item -> item.getId().equals(id))
                 .findFirst();
-        if (itemOptional.isPresent()){
+        if (itemOptional.isPresent()) {
             databaseService.insertNewFavoriteTrackRecord(itemOptional.get());
             log.info("Add track id {} to database", id);
             logService.insertLogRecord("Add track to database");
@@ -110,12 +110,12 @@ public class SpotifyController {
 
     @GetMapping("/remove/track")
     public String deleteFromFavorite(Model model,
-                           @RequestParam(name = "id") String id) {
+                                     @RequestParam(name = "id") String id) {
         log.info("Deleting track id {} from favorite", id);
         logService.insertLogRecord("Deleting track from favorite");
 
         int nuderOfDeletedRecords = databaseService.deleteTrackByIdFromFavorite(id);
-        if (nuderOfDeletedRecords == 1){
+        if (nuderOfDeletedRecords == 1) {
             log.info("Tack id {} has been removed from favorite", id);
             logService.insertLogRecord("Tack has been removed from favorite");
         } else {

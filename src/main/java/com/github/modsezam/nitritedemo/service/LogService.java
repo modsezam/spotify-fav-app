@@ -11,7 +11,12 @@ import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
+import java.security.Timestamp;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 @Slf4j
 @Service
@@ -20,12 +25,20 @@ public class LogService {
     @Autowired
     private NitriteRepository nitriteRepository;
 
-    public void insertLogRecord(String logText){
+    public void insertLogRecord(String logText) {
         nitriteRepository.insertNewLogRecord(logText);
     }
 
-    public Cursor<Log> getLogs(){
-        return nitriteRepository.findAllLogs();
+    public List<Log> getLogs() {
+        Cursor<Log> logs = nitriteRepository.findAllLogs();
+        List<Log> logList = new ArrayList<>();
+        for (Log singleLog : logs) {
+            long logLongDate = singleLog.getLogDate();
+            LocalDateTime localDateTime = LocalDateTime.ofInstant(Instant.ofEpochMilli(logLongDate), TimeZone.getDefault().toZoneId());
+            singleLog.setLogLocalDateTime(localDateTime);
+            logList.add(singleLog);
+        }
+        return logList;
     }
 
 }

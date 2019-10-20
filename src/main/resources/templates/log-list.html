@@ -10,47 +10,29 @@
 
 <div class="content-container">
     <div class="container">
-        <div class="row col-12 mt-5">
+        <div class="row col-md-12 mt-5">
+            <h2>Log list</h2>
+        </div>
 
-
-<!--            <div class="row" th:each="track : ${trackList.getItems()}">-->
-<!--                <p th:text="${track.getName()}"></p><br>-->
-<!--            </div>-->
-
-
+        <div class="row col-12 mt-1">
             <table class="table table-striped">
                 <thead>
                 <tr>
-                    <th scope="col">id</th>
-                    <th scope="col">Track name</th>
-                    <th scope="col">Album</th>
-                    <th scope="col">Artist</th>
-                    <th scope="col">Favorite</th>
+                    <th scope="col">Log date</th>
+                    <th scope="col">Log text</th>
                 </tr>
                 </thead>
                 <tbody>
-                <tr  th:each="track : ${trackList.getItems()}">
-                    <td th:text="${track.getId()}">1</td>
-                    <td th:text="${track.getName()}">Mark</td>
-                    <td th:text="${track.getAlbum().getName()}"></td>
-                    <td th:text="${track.getArtists().get(0).getName()}"></td>
-                    <td>
-                        <a th:if="${track.getFavorite() == null}" th:href="@{/spotify/add/track(id=${track.getId()})}" class="btn btn-primary btn-sm active" role="button" aria-pressed="true">add</a>
-                        <a th:if="${track.getFavorite() != null}" th:href="@{/spotify/remove/track(id=${track.getId()})}" class="btn btn-primary btn-sm active" role="button" aria-pressed="true">remove</a>
-                    </td>
+                <tr  th:each="log : ${logList}">
+                    <!--/*@thymesVar id="DateTimeFormatter" type=""*/-->
+                    <!--/*@thymesVar id="ofPattern" type=""*/-->
+                    <td th:text="${log.getLogLocalDateTime()}"></td>
+                    <td th:text="${log.getLogText()}">Mark</td>
                 </tr>
                 </tbody>
             </table>
         </div>
 
-        <div class="row col-12 d-flex justify-content-center my-3">
-            <div class="col-2">
-                <a th:if="${trackList.getPrevious() != null}" th:href="@{/spotify/search/query(q=${trackList.getPrevious()})}">prev page</a>
-            </div>
-            <div class="col-2">
-                <a th:if="${trackList.getNext() != null}" th:href="@{/spotify/search/query(q=${trackList.getNext()})}">next page</a>
-            </div>
-        </div>
     </div>
 </div>
 

@@ -23,11 +23,9 @@ public class LogController {
     public String getLog(Model model){
         log.info("Open page with log");
         logService.insertLogRecord("Open page with logs");
-        Cursor<Log> logs = logService.getLogs();
-        List<Log> logList = new ArrayList<>();
-        for (Log singleLog : logs) {
-            logList.add(singleLog);
-        }
+
+        List<Log> logList = logService.getLogs();
+
         model.addAttribute("logList", logList);
         return "log-list";
     }
