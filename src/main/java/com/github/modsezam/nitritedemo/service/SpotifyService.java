@@ -9,6 +9,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDateTime;
@@ -51,20 +52,31 @@ public class SpotifyService {
 
     private ResponseEntity<SpotifyModel> getSpotifyModelResponseEntity(String query) {
         RestTemplate rest = new RestTemplate();
-        ResponseEntity<SpotifyModel> responseEntity = rest.exchange(query,
-                HttpMethod.GET,
-                httpFrameComposer.getAuthorizationTokenEntity(),
-                SpotifyModel.class);
+        ResponseEntity<SpotifyModel> responseEntity = null;
+        try {
+            responseEntity = rest.exchange(query,
+                    HttpMethod.GET,
+                    httpFrameComposer.getAuthorizationTokenEntity(),
+                    SpotifyModel.class);
+        } catch (RestClientException rce) {
+            log.error("Rest client exeption", rce);
+            responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+//            e.printStackTrace();
+        } catch (IllegalArgumentException iae){
+            log.error("Query variable exception", iae);
+            responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
 
         if (responseEntity.getStatusCode() == HttpStatus.OK) {
             log.info("The correct track request data has been retrieved from Spotify");
             logService.insertLogRecord("The correct track request data has been retrieved from Spotify");
+            return responseEntity;
         } else {
             log.error("There is a problem with track request data. Http status code: {}",
                     responseEntity.getStatusCodeValue());
             logService.insertLogRecord("There is a problem with track request data.");
         }
-        return responseEntity;
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
     }
 
 

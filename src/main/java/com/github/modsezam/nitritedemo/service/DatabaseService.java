@@ -11,6 +11,7 @@ import org.dizitart.no2.objects.Cursor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -56,11 +57,11 @@ public class DatabaseService {
         return null;
     }
 
-    public SpotifyModel checkFavoritesTrack(SpotifyModel spotifyModel) {
+    public ResponseEntity<SpotifyModel> checkTracksAreInFavorites(SpotifyModel spotifyModel) {
 
         Set<String> listTrackById = getAllIdTracks();
         if (listTrackById == null){
-            return spotifyModel;
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
             List<Item> items = Objects.requireNonNull(spotifyModel).getTracks().getItems();
             for (Item item : items) {
@@ -69,14 +70,14 @@ public class DatabaseService {
                 }
             }
         }
-        return spotifyModel;
+        return ResponseEntity.of(Optional.of(spotifyModel));
     }
 
     public int deleteTrackByIdFromFavorite(String id) {
         return nitriteRepository.deleteTrackById(id);
     }
 
-    public SpotifyModel getAllFavoritesTracks() {
+    public ResponseEntity<SpotifyModel> getAllFavoritesTracks() {
         Cursor<FavoriteTrack> allFavoritesTracks = nitriteRepository.findAllFavoritesTracks();
         SpotifyModel spotifyModel = new SpotifyModel();
         List<Item> items = new ArrayList<>();
@@ -87,6 +88,6 @@ public class DatabaseService {
         }
         tracks.setItems(items);
         spotifyModel.setTracks(tracks);
-        return spotifyModel;
+        return ResponseEntity.ok(spotifyModel);
     }
 }

@@ -1,6 +1,5 @@
 package com.github.modsezam.nitritedemo.controller;
 
-import com.github.modsezam.nitritedemo.model.db.FavoriteTrack;
 import com.github.modsezam.nitritedemo.model.spotify.Item;
 import com.github.modsezam.nitritedemo.model.spotify.SpotifyModel;
 import com.github.modsezam.nitritedemo.service.DatabaseService;
@@ -9,6 +8,7 @@ import com.github.modsezam.nitritedemo.service.SpotifyService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.*;
-import java.util.stream.Stream;
 
 @Slf4j
 @Controller
@@ -37,7 +36,7 @@ public class SpotifyController {
     private int pageLimitResult;
 
     //    private SpotifyModel spotifyModelResp;
-    ResponseEntity<SpotifyModel> spotifyModelResponseEntity
+    ResponseEntity<SpotifyModel> spotifyModelResponseEntity;
 
     private String currentQuery;
 
@@ -61,11 +60,11 @@ public class SpotifyController {
         log.info("Get track search request q={}", query);
         logService.insertLogRecord("Get track search request");
 
-        ResponseEntity<SpotifyModel> spotifyModelResponseEntity = spotifyService.getTrackList(query, pageLimitResult, 0, "PL");
-        spotifyModelResp = databaseService.checkFavoritesTrack(spotifyModelResp);
-
-
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
+        spotifyModelResponseEntity = spotifyService.getTrackList(query, pageLimitResult, 0, "PL");
+        if (spotifyModelResponseEntity.getStatusCode() == HttpStatus.OK ){
+            spotifyModelResponseEntity = databaseService.checkTracksAreInFavorites(spotifyModelResponseEntity.getBody());
+        }
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks());
         return "track-list";
     }
 
@@ -76,9 +75,11 @@ public class SpotifyController {
         logService.insertLogRecord("Get track search request from query");
         this.currentQuery = query;
 
-        spotifyModelResp = spotifyService.getTrackListFromQuery(query).getBody();
-        spotifyModelResp = databaseService.checkFavoritesTrack(spotifyModelResp);
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
+        spotifyModelResponseEntity = spotifyService.getTrackListFromQuery(query);
+        if (spotifyModelResponseEntity.getStatusCode() == HttpStatus.OK ){
+            spotifyModelResponseEntity = databaseService.checkTracksAreInFavorites(spotifyModelResponseEntity.getBody());
+        }
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks());
         return "track-list";
     }
 
@@ -89,7 +90,7 @@ public class SpotifyController {
         logService.insertLogRecord("Adding track to favorites");
 
 
-        Optional<Item> itemOptional = Objects.requireNonNull(spotifyModelResp).getTracks().getItems()
+        Optional<Item> itemOptional = Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks().getItems()
                 .stream()
                 .filter(item -> item.getId().equals(id))
                 .findFirst();
@@ -102,9 +103,9 @@ public class SpotifyController {
             logService.insertLogRecord("Database adding error to favorite");
         }
 
-        spotifyModelResp = databaseService.checkFavoritesTrack(spotifyModelResp);
+        spotifyModelResponseEntity = databaseService.checkTracksAreInFavorites(spotifyModelResponseEntity.getBody());
 
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks());
         return "track-list";
     }
 
@@ -114,8 +115,8 @@ public class SpotifyController {
         log.info("Deleting track id {} from favorite", id);
         logService.insertLogRecord("Deleting track from favorite");
 
-        int nuderOfDeletedRecords = databaseService.deleteTrackByIdFromFavorite(id);
-        if (nuderOfDeletedRecords == 1) {
+        int numberOfDeletedRecords = databaseService.deleteTrackByIdFromFavorite(id);
+        if (numberOfDeletedRecords == 1) {
             log.info("Tack id {} has been removed from favorite", id);
             logService.insertLogRecord("Tack has been removed from favorite");
         } else {
@@ -123,12 +124,12 @@ public class SpotifyController {
             logService.insertLogRecord("Tack deletion error from favorites");
         }
 
-        Objects.requireNonNull(spotifyModelResp).getTracks().getItems()
+        Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks().getItems()
                 .stream()
                 .filter(item -> item.getId().equals(id))
                 .forEach(item -> item.setFavorite(null));
 
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks());
         return "track-list";
     }
 
@@ -138,7 +139,7 @@ public class SpotifyController {
         logService.insertLogRecord("Find all tracks in database");
         favoriteTrackListById = databaseService.getAllIdTracks();
 
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp).getTracks());
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks());
 
         return "track-list";
     }
@@ -147,10 +148,9 @@ public class SpotifyController {
     public String getAllFavoriteTracks(Model model) {
         log.info("Get all favorites tracks in database");
         logService.insertLogRecord("Get all favorites tracks in database");
+        spotifyModelResponseEntity = databaseService.getAllFavoritesTracks();
 
-        spotifyModelResp = databaseService.getAllFavoritesTracks();
-
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResp.getTracks()));
+        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody().getTracks()));
 
         return "track-list";
     }
