@@ -35,7 +35,6 @@ public class SpotifyController {
     @Value("${page.limit-result}")
     private int pageLimitResult;
 
-    //    private SpotifyModel spotifyModelResp;
     ResponseEntity<SpotifyModel> spotifyModelResponseEntity;
 
     private String currentQuery;
@@ -130,17 +129,6 @@ public class SpotifyController {
                 .forEach(item -> item.setFavorite(null));
 
         model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks());
-        return "track-list";
-    }
-
-    @GetMapping("/find/tracks")
-    public String findAllTracks(Model model) {
-        log.info("Find all tracks in database");
-        logService.insertLogRecord("Find all tracks in database");
-        favoriteTrackListById = databaseService.getAllIdTracks();
-
-        model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody()).getTracks());
-
         return "track-list";
     }
 

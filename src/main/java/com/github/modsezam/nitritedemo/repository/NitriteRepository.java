@@ -84,14 +84,6 @@ public class NitriteRepository {
         log.debug("Insert new favorite artist to data base. Track id: {}", artist.getId());
     }
 
-    public void test2() {
-        Cursor<Log> logs = logRepository.find();
-        System.out.println("log size " + logs.size());
-        for (Log log1 : logs) {
-            System.out.println(log1.getLogText());
-        }
-    }
-
     public Cursor<FavoriteTrack> findAllTrack() {
         return favoriteTrackRepository.find();
     }

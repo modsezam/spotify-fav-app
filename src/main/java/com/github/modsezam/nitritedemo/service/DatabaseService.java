@@ -38,9 +38,6 @@ public class DatabaseService {
         nitriteRepository.insertNewFavoriteTrackRecord(item);
     }
 
-    public Cursor<FavoriteTrack> getAllTracks(){
-        return nitriteRepository.findAllTrack();
-    }
 
     public Set<String> getAllIdTracks(){
         Cursor<FavoriteTrack> allTrack = nitriteRepository.findAllTrack();
@@ -58,7 +55,6 @@ public class DatabaseService {
     }
 
     public ResponseEntity<SpotifyModel> checkTracksAreInFavorites(SpotifyModel spotifyModel) {
-
         Set<String> listTrackById = getAllIdTracks();
         if (listTrackById == null){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
