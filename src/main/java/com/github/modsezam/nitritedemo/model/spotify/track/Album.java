@@ -1,6 +1,8 @@
-package com.github.modsezam.nitritedemo.model.spotify;
+package com.github.modsezam.nitritedemo.model.spotify.track;
 
 import com.fasterxml.jackson.annotation.*;
+import com.github.modsezam.nitritedemo.model.spotify.ExternalUrls;
+import com.github.modsezam.nitritedemo.model.spotify.Image;
 
 import java.util.HashMap;
 import java.util.List;

@@ -1,37 +1,50 @@
-package com.github.modsezam.nitritedemo.model.spotify;
+package com.github.modsezam.nitritedemo.model.spotify.artist;
 
 import com.fasterxml.jackson.annotation.*;
+import com.github.modsezam.nitritedemo.model.spotify.ExternalUrls;
+import com.github.modsezam.nitritedemo.model.spotify.Image;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @JsonPropertyOrder({
         "external_urls",
+        "followers",
+        "genres",
         "href",
         "id",
+        "images",
         "name",
+        "popularity",
         "type",
         "uri"
 })
-public class Artist {
+public class Item {
 
     @JsonProperty("external_urls")
     private ExternalUrls externalUrls;
+    @JsonProperty("followers")
+    private Followers followers;
+    @JsonProperty("genres")
+    private List<String> genres = null;
     @JsonProperty("href")
     private String href;
     @JsonProperty("id")
     private String id;
+    @JsonProperty("images")
+    private List<Image> images = null;
     @JsonProperty("name")
     private String name;
+    @JsonProperty("popularity")
+    private Integer popularity;
     @JsonProperty("type")
     private String type;
     @JsonProperty("uri")
     private String uri;
     @JsonIgnore
     private Map<String, Object> additionalProperties = new HashMap<String, Object>();
-
-    private Boolean isFavorite;
 
     @JsonProperty("external_urls")
     public ExternalUrls getExternalUrls() {
@@ -41,6 +54,26 @@ public class Artist {
     @JsonProperty("external_urls")
     public void setExternalUrls(ExternalUrls externalUrls) {
         this.externalUrls = externalUrls;
+    }
+
+    @JsonProperty("followers")
+    public Followers getFollowers() {
+        return followers;
+    }
+
+    @JsonProperty("followers")
+    public void setFollowers(Followers followers) {
+        this.followers = followers;
+    }
+
+    @JsonProperty("genres")
+    public List<String> getGenres() {
+        return genres;
+    }
+
+    @JsonProperty("genres")
+    public void setGenres(List<String> genres) {
+        this.genres = genres;
     }
 
     @JsonProperty("href")
@@ -63,6 +96,16 @@ public class Artist {
         this.id = id;
     }
 
+    @JsonProperty("images")
+    public List<Image> getImages() {
+        return images;
+    }
+
+    @JsonProperty("images")
+    public void setImages(List<Image> images) {
+        this.images = images;
+    }
+
     @JsonProperty("name")
     public String getName() {
         return name;
@@ -71,6 +114,16 @@ public class Artist {
     @JsonProperty("name")
     public void setName(String name) {
         this.name = name;
+    }
+
+    @JsonProperty("popularity")
+    public Integer getPopularity() {
+        return popularity;
+    }
+
+    @JsonProperty("popularity")
+    public void setPopularity(Integer popularity) {
+        this.popularity = popularity;
     }
 
     @JsonProperty("type")
@@ -103,11 +156,4 @@ public class Artist {
         this.additionalProperties.put(name, value);
     }
 
-    public Boolean getFavorite() {
-        return isFavorite;
-    }
-
-    public void setFavorite(Boolean favorite) {
-        isFavorite = favorite;
-    }
 }

@@ -1,7 +1,7 @@
 package com.github.modsezam.nitritedemo.service;
 
 import com.github.modsezam.nitritedemo.component.HttpFrameComposer;
-import com.github.modsezam.nitritedemo.model.spotify.SpotifyModel;
+import com.github.modsezam.nitritedemo.model.spotify.track.SpotifyModelTrack;
 import com.github.modsezam.nitritedemo.model.spotify.authorisation.SpotifyTokenHolder;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,32 +32,32 @@ public class SpotifyService {
     private LogService logService;
 
 
-    public ResponseEntity<SpotifyModel> getTrackList(String query, int limit, int offset, String market ){
+    public ResponseEntity<SpotifyModelTrack> getTrackList(String query, int limit, int offset, String market ){
         checkSpotifyToken();
         String url = "https://api.spotify.com/v1/search?q=" + query +
                 "&type=track&limit=" + limit +
                 "&offset=" + offset +
                 "&market=" + market;
-        ResponseEntity<SpotifyModel> responseEntity = getSpotifyModelResponseEntity(url);
+        ResponseEntity<SpotifyModelTrack> responseEntity = getSpotifyModelResponseEntity(url);
         return responseEntity;
     }
 
 
-    public ResponseEntity<SpotifyModel> getTrackListFromQuery(String query){
+    public ResponseEntity<SpotifyModelTrack> getTrackListFromQuery(String query){
         checkSpotifyToken();
-        ResponseEntity<SpotifyModel> responseEntity = getSpotifyModelResponseEntity(query);
+        ResponseEntity<SpotifyModelTrack> responseEntity = getSpotifyModelResponseEntity(query);
         return responseEntity;
     }
 
 
-    private ResponseEntity<SpotifyModel> getSpotifyModelResponseEntity(String query) {
+    private ResponseEntity<SpotifyModelTrack> getSpotifyModelResponseEntity(String query) {
         RestTemplate rest = new RestTemplate();
-        ResponseEntity<SpotifyModel> responseEntity = null;
+        ResponseEntity<SpotifyModelTrack> responseEntity = null;
         try {
             responseEntity = rest.exchange(query,
                     HttpMethod.GET,
                     httpFrameComposer.getAuthorizationTokenEntity(),
-                    SpotifyModel.class);
+                    SpotifyModelTrack.class);
         } catch (RestClientException rce) {
             log.error("Rest client exeption", rce);
             responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();

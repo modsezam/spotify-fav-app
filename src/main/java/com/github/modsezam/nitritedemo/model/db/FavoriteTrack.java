@@ -1,6 +1,6 @@
 package com.github.modsezam.nitritedemo.model.db;
 
-import com.github.modsezam.nitritedemo.model.spotify.Item;
+import com.github.modsezam.nitritedemo.model.spotify.track.Item;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

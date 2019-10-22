@@ -1,7 +1,7 @@
 package com.github.modsezam.nitritedemo.controller.api;
 
-import com.github.modsezam.nitritedemo.model.spotify.Item;
-import com.github.modsezam.nitritedemo.model.spotify.SpotifyModel;
+import com.github.modsezam.nitritedemo.model.spotify.track.Item;
+import com.github.modsezam.nitritedemo.model.spotify.track.SpotifyModelTrack;
 import com.github.modsezam.nitritedemo.service.DatabaseService;
 import com.github.modsezam.nitritedemo.service.LogService;
 import com.github.modsezam.nitritedemo.service.SpotifyService;
@@ -33,10 +33,7 @@ public class ApiSpotifyController {
     @Autowired
     private DatabaseService databaseService;
 
-    @Value("${page.limit-result}")
-    private int pageLimitResult;
-
-    private ResponseEntity<SpotifyModel> spotifyModelResponseEntity;
+    private ResponseEntity<SpotifyModelTrack> spotifyModelResponseEntity;
 
     private String currentQuery;
 
@@ -49,10 +46,10 @@ public class ApiSpotifyController {
             @ApiResponse(code = 200, message = "Get request from API Spotify with success."),
             @ApiResponse(code = 400, message = "Bad request from API Spotify.")
     })
-    public ResponseEntity<SpotifyModel> searchTrack(@RequestParam(name = "q") String query,
-                                                @RequestParam(name = "limit", defaultValue = "10") int pageLimit,
-                                                @RequestParam(name = "ofset", defaultValue = "0") int offset,
-                                                @RequestParam(name = "market", defaultValue = "PL") String market) {
+    public ResponseEntity<SpotifyModelTrack> searchTrack(@RequestParam(name = "q") String query,
+                                                         @RequestParam(name = "limit", defaultValue = "10") int pageLimit,
+                                                         @RequestParam(name = "ofset", defaultValue = "0") int offset,
+                                                         @RequestParam(name = "market", defaultValue = "PL") String market) {
 
         log.info("Api - Get track search request q={}", query);
         logService.insertLogRecord("Api - Get track search request");
@@ -71,7 +68,7 @@ public class ApiSpotifyController {
             @ApiResponse(code = 200, message = "Get request from API Spotify with success."),
             @ApiResponse(code = 400, message = "Bad request from API Spotify.")
     })
-    public ResponseEntity<SpotifyModel> searchTrackByQuery(@RequestParam(name = "q") String query) {
+    public ResponseEntity<SpotifyModelTrack> searchTrackByQuery(@RequestParam(name = "q") String query) {
 
         log.info("Get track request from HATEOAS link {}", query);
         logService.insertLogRecord("Get track request from HATEOAS link");
@@ -137,7 +134,7 @@ public class ApiSpotifyController {
             @ApiResponse(code = 200, message = "Get request from database with success."),
     })
     @GetMapping("/favorites/track")
-    public ResponseEntity<SpotifyModel> getAllFavoriteTracks() {
+    public ResponseEntity<SpotifyModelTrack> getAllFavoriteTracks() {
         log.info("Get all favorites tracks from database");
         logService.insertLogRecord("Get all favorites tracks from database");
         spotifyModelResponseEntity = databaseService.getAllFavoritesTracks();

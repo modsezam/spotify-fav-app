@@ -1,9 +1,9 @@
 package com.github.modsezam.nitritedemo.service;
 
 import com.github.modsezam.nitritedemo.model.db.FavoriteTrack;
-import com.github.modsezam.nitritedemo.model.spotify.Item;
-import com.github.modsezam.nitritedemo.model.spotify.SpotifyModel;
-import com.github.modsezam.nitritedemo.model.spotify.Tracks;
+import com.github.modsezam.nitritedemo.model.spotify.track.Item;
+import com.github.modsezam.nitritedemo.model.spotify.track.SpotifyModelTrack;
+import com.github.modsezam.nitritedemo.model.spotify.track.Tracks;
 import com.github.modsezam.nitritedemo.repository.NitriteRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.dizitart.no2.exceptions.NitriteIOException;
@@ -54,28 +54,28 @@ public class DatabaseService {
         return Optional.empty();
     }
 
-    public ResponseEntity<SpotifyModel> checkTracksAreInFavorites(SpotifyModel spotifyModel) {
+    public ResponseEntity<SpotifyModelTrack> checkTracksAreInFavorites(SpotifyModelTrack spotifyModelTrack) {
         Optional<Set<String>> listTrackById = getAllIdTracks();
         if (!listTrackById.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
-            List<Item> items = (spotifyModel).getTracks().getItems();
+            List<Item> items = (spotifyModelTrack).getTracks().getItems();
             for (Item item : items) {
                 if (listTrackById.get().contains(item.getId())){
                     item.setFavorite(true);
                 }
             }
         }
-        return ResponseEntity.of(Optional.of(spotifyModel));
+        return ResponseEntity.of(Optional.of(spotifyModelTrack));
     }
 
     public int deleteTrackByIdFromFavorite(String id) {
         return nitriteRepository.deleteTrackById(id);
     }
 
-    public ResponseEntity<SpotifyModel> getAllFavoritesTracks() {
+    public ResponseEntity<SpotifyModelTrack> getAllFavoritesTracks() {
         Cursor<FavoriteTrack> allFavoritesTracks = nitriteRepository.findAllFavoritesTracks();
-        SpotifyModel spotifyModel = new SpotifyModel();
+        SpotifyModelTrack spotifyModelTrack = new SpotifyModelTrack();
         List<Item> items = new ArrayList<>();
         Tracks tracks = new Tracks();
         for (FavoriteTrack allFavoritesTrack : allFavoritesTracks) {
@@ -83,7 +83,7 @@ public class DatabaseService {
             items.add(allFavoritesTrack.getItem());
         }
         tracks.setItems(items);
-        spotifyModel.setTracks(tracks);
-        return ResponseEntity.ok(spotifyModel);
+        spotifyModelTrack.setTracks(tracks);
+        return ResponseEntity.ok(spotifyModelTrack);
     }
 }

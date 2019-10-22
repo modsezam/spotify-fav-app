@@ -1,4 +1,4 @@
-package com.github.modsezam.nitritedemo.model.spotify;
+package com.github.modsezam.nitritedemo.model.spotify.track;
 
 import com.fasterxml.jackson.annotation.*;
 
@@ -9,7 +9,7 @@ import java.util.Map;
 @JsonPropertyOrder({
         "tracks"
 })
-public class SpotifyModel {
+public class SpotifyModelTrack {
 
     @JsonProperty("tracks")
     private Tracks tracks;

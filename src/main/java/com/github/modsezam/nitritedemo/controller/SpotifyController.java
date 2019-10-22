@@ -1,7 +1,7 @@
 package com.github.modsezam.nitritedemo.controller;
 
-import com.github.modsezam.nitritedemo.model.spotify.Item;
-import com.github.modsezam.nitritedemo.model.spotify.SpotifyModel;
+import com.github.modsezam.nitritedemo.model.spotify.track.Item;
+import com.github.modsezam.nitritedemo.model.spotify.track.SpotifyModelTrack;
 import com.github.modsezam.nitritedemo.service.DatabaseService;
 import com.github.modsezam.nitritedemo.service.LogService;
 import com.github.modsezam.nitritedemo.service.SpotifyService;
@@ -35,7 +35,7 @@ public class SpotifyController {
     @Value("${page.limit-result}")
     private int pageLimitResult;
 
-    ResponseEntity<SpotifyModel> spotifyModelResponseEntity;
+    ResponseEntity<SpotifyModelTrack> spotifyModelResponseEntity;
 
     private String currentQuery;
 

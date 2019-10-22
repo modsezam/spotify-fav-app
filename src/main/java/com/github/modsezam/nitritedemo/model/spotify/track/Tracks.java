@@ -1,4 +1,4 @@
-package com.github.modsezam.nitritedemo.model.spotify;
+package com.github.modsezam.nitritedemo.model.spotify.track;
 
 import com.fasterxml.jackson.annotation.*;
 
