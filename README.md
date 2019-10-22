@@ -5,6 +5,12 @@ Spotify application to search for favorite tracks and authors and save them in f
 An application that allows the user to search for artists and music tracks using the WEB API Spotify. It is also saving the indicated songs / artists to the local database.
 The application was made in Spring Boot on the Thymeleaf template engine and additionally as the Rest API.
 
+### technology stack
+backend: java, spring boot
+database: NoSQL nitrite database
+frontend: Thymeleaf, Bootstrap
+
+
 ### run application
 The application is available at:
 http://localhost:8080
@@ -23,7 +29,7 @@ https://github.com/dizitart/nitrite-database.
 The database does not require installation of additional components and additionally stores the archive in the db-repository.db file located in the temporary files AppData \ Local \ Temp \.
 
 ### log management
-Logs from the dancyh database are kept for 1 hour and because the dancyh database does not have such functionality, the logs remove the ScheduledCleaningLogService service which cleans the database from logs older than 1 hour every 100 seconds.
+Logs from the dancyh database are only kept for 1 hour and because the database does not have such functionality, the logs are remove by ScheduledCleaningLogService service which cleans the database from logs older than 1 hour every 100 seconds.
 To write logs to a file I used Slf4j with the appender set to 60 files after 1 minute.
 The current file path is declared in the application.properties file in the log.path variable.
 The compressed files are located in the target/slf4j/roll-by-time folder.
