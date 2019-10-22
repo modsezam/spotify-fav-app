@@ -134,8 +134,8 @@ public class SpotifyController {
 
     @GetMapping("/favorites")
     public String getAllFavoriteTracks(Model model) {
-        log.info("Get all favorites tracks in database");
-        logService.insertLogRecord("Get all favorites tracks in database");
+        log.info("Get all favorites tracks from database");
+        logService.insertLogRecord("Get all favorites tracks from database");
         spotifyModelResponseEntity = databaseService.getAllFavoritesTracks();
 
         model.addAttribute("trackList", Objects.requireNonNull(spotifyModelResponseEntity.getBody().getTracks()));

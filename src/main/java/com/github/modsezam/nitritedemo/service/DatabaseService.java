@@ -39,29 +39,29 @@ public class DatabaseService {
     }
 
 
-    public Set<String> getAllIdTracks(){
+    public Optional<Set<String>> getAllIdTracks(){
         Cursor<FavoriteTrack> allTrack = nitriteRepository.findAllTrack();
         Set<String> allTrackId = new HashSet<>();
         if (allTrack != null){
             for (FavoriteTrack favoriteTrack : allTrack) {
                 allTrackId.add(favoriteTrack.getId());
             }
-            return allTrackId;
+            return Optional.of(allTrackId);
         } else {
             log.warn("Find all tracks - empty list");
             nitriteRepository.insertNewLogRecord("Find all tracks - empty list");
         }
-        return null;
+        return Optional.empty();
     }
 
     public ResponseEntity<SpotifyModel> checkTracksAreInFavorites(SpotifyModel spotifyModel) {
-        Set<String> listTrackById = getAllIdTracks();
-        if (listTrackById == null){
+        Optional<Set<String>> listTrackById = getAllIdTracks();
+        if (!listTrackById.isPresent()){
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } else {
-            List<Item> items = Objects.requireNonNull(spotifyModel).getTracks().getItems();
+            List<Item> items = (spotifyModel).getTracks().getItems();
             for (Item item : items) {
-                if (listTrackById.contains(item.getId())){
+                if (listTrackById.get().contains(item.getId())){
                     item.setFavorite(true);
                 }
             }

@@ -13,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Objects;
@@ -133,5 +132,15 @@ public class ApiSpotifyController {
         return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
 
-
+    @ApiOperation(value = "Use this endpoint to get all favorite tracks from database.")
+    @ApiResponses(value = {
+            @ApiResponse(code = 200, message = "Get request from database with success."),
+    })
+    @GetMapping("/favorites/track")
+    public ResponseEntity<SpotifyModel> getAllFavoriteTracks() {
+        log.info("Get all favorites tracks from database");
+        logService.insertLogRecord("Get all favorites tracks from database");
+        spotifyModelResponseEntity = databaseService.getAllFavoritesTracks();
+        return spotifyModelResponseEntity;
+    }
 }
