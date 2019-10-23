@@ -1,10 +1,17 @@
 package com.github.modsezam.nitritedemo.service;
 
 import com.github.modsezam.nitritedemo.component.HttpFrameComposer;
+import com.github.modsezam.nitritedemo.configuration.ParameterizedTypeReferenceBuilder;
+import com.github.modsezam.nitritedemo.model.ResponseWrapper;
 import com.github.modsezam.nitritedemo.model.spotify.track.SpotifyModelTrack;
 import com.github.modsezam.nitritedemo.model.spotify.authorisation.SpotifyTokenHolder;
+import com.google.common.reflect.TypeParameter;
+import com.google.common.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.core.ResolvableType;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -31,8 +39,23 @@ public class SpotifyService {
     @Autowired
     private LogService logService;
 
+    public <T> ResponseEntity<ResponseWrapper<T>> makeRequest(String uri, Class<T> clazz) {
+        RestTemplate rest = new RestTemplate();
+        ParameterizedTypeReference<ResponseWrapper<T>> responseTypeRef =
+                ParameterizedTypeReferenceBuilder.fromTypeToken(
+                        new TypeToken<ResponseWrapper<T>>() {
+                        }
+                                .where(new TypeParameter<T>() {
+                                }, clazz));
+        ResponseEntity<ResponseWrapper<T>> response = rest.exchange(
+                uri,
+                HttpMethod.GET,
+                httpFrameComposer.getAuthorizationTokenEntity(),
+                responseTypeRef);
+        return response;
+    }
 
-    public ResponseEntity<SpotifyModelTrack> getTrackList(String query, int limit, int offset, String market ){
+    public ResponseEntity<SpotifyModelTrack> getTrackList(String query, int limit, int offset, String market) {
         checkSpotifyToken();
         String url = "https://api.spotify.com/v1/search?q=" + query +
                 "&type=track&limit=" + limit +
@@ -43,7 +66,7 @@ public class SpotifyService {
     }
 
 
-    public ResponseEntity<SpotifyModelTrack> getTrackListFromQuery(String query){
+    public ResponseEntity<SpotifyModelTrack> getTrackListFromQuery(String query) {
         checkSpotifyToken();
         ResponseEntity<SpotifyModelTrack> responseEntity = getSpotifyModelResponseEntity(query);
         return responseEntity;
@@ -62,7 +85,7 @@ public class SpotifyService {
             log.error("Rest client exeption", rce);
             responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 //            e.printStackTrace();
-        } catch (IllegalArgumentException iae){
+        } catch (IllegalArgumentException iae) {
             log.error("Query variable exception", iae);
             responseEntity = ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
         }
@@ -82,9 +105,9 @@ public class SpotifyService {
 
     private void checkSpotifyToken() {
         Optional<LocalDateTime> expiredDateTime = spotifyTokenHolder.getExpiredDateTime();
-        if (expiredDateTime.isPresent()){
+        if (expiredDateTime.isPresent()) {
             LocalDateTime expiredTokenDataTime = expiredDateTime.get();
-            if (expiredTokenDataTime.isBefore(LocalDateTime.now())){
+            if (expiredTokenDataTime.isBefore(LocalDateTime.now())) {
                 log.warn("Spotify token has expired! {} ", expiredTokenDataTime.toString());
                 log.info("Generate new token.");
                 logService.insertLogRecord("Spotify token has expired! Generate new token.");

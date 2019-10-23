@@ -1,5 +1,6 @@
 package com.github.modsezam.nitritedemo.controller;
 
+import com.github.modsezam.nitritedemo.model.ResponseWrapper;
 import com.github.modsezam.nitritedemo.model.spotify.track.Item;
 import com.github.modsezam.nitritedemo.model.spotify.track.SpotifyModelTrack;
 import com.github.modsezam.nitritedemo.service.DatabaseService;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.*;
 
 @Slf4j
@@ -69,10 +72,14 @@ public class SpotifyController {
 
     @GetMapping("/search/query")
     public String getQuery(Model model,
-                           @RequestParam(name = "q") String query) {
+                           @RequestParam(name = "q") String query) throws URISyntaxException {
         log.info("Get track search request from query {}", query);
         logService.insertLogRecord("Get track search request from query");
         this.currentQuery = query;
+
+        ResponseEntity<ResponseWrapper<SpotifyModelTrack>> responseWrapperResponseEntity = spotifyService.makeRequest(query, SpotifyModelTrack.class);
+        ResponseWrapper<SpotifyModelTrack> body = responseWrapperResponseEntity.getBody();
+        SpotifyModelTrack response = body.getResponse();
 
         spotifyModelResponseEntity = spotifyService.getTrackListFromQuery(query);
         if (spotifyModelResponseEntity.getStatusCode() == HttpStatus.OK ){
