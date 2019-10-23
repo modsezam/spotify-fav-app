@@ -33,7 +33,7 @@ public class SwaggerConfig extends WebMvcConfigurationSupport {
                 .title("Spotify app.")
                 .description("Add track and artist from spotify to favorite.")
                 .version("0.0.1")
-                .contact(new Contact("Marcin Kobierowski", "modsezam.github.com", "modsezam@gmail.com"))
+                .contact(new Contact("Marcin Kobierowski", "https://github.com/modsezam", "modsezam@gmail.com"))
                 .build();
     }
 
