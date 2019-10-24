@@ -1,14 +1,10 @@
 package com.github.modsezam.nitritedemo.service;
 
 import com.github.modsezam.nitritedemo.component.HttpFrameComposer;
-import com.github.modsezam.nitritedemo.configuration.ParameterizedTypeReferenceBuilder;
 import com.github.modsezam.nitritedemo.model.ResponseWrapper;
 import com.github.modsezam.nitritedemo.model.spotify.track.SpotifyModelTrack;
 import com.github.modsezam.nitritedemo.model.spotify.authorisation.SpotifyTokenHolder;
-import com.google.common.reflect.TypeParameter;
-import com.google.common.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.catalina.filters.AddDefaultCharsetFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.core.ResolvableType;
@@ -19,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -39,20 +34,14 @@ public class SpotifyService {
     @Autowired
     private LogService logService;
 
-    public <T> ResponseEntity<ResponseWrapper<T>> makeRequest(String uri, Class<T> clazz) {
+    public <T> ResponseWrapper<T> makeRequest2(String uri, Class<T> clazz) {
         RestTemplate rest = new RestTemplate();
-        ParameterizedTypeReference<ResponseWrapper<T>> responseTypeRef =
-                ParameterizedTypeReferenceBuilder.fromTypeToken(
-                        new TypeToken<ResponseWrapper<T>>() {
-                        }
-                                .where(new TypeParameter<T>() {
-                                }, clazz));
         ResponseEntity<ResponseWrapper<T>> response = rest.exchange(
                 uri,
                 HttpMethod.GET,
                 httpFrameComposer.getAuthorizationTokenEntity(),
-                responseTypeRef);
-        return response;
+                ParameterizedTypeReference.forType(ResolvableType.forClassWithGenerics(ResponseWrapper.class, clazz).getType()));
+        return response.getBody();
     }
 
     public ResponseEntity<SpotifyModelTrack> getTrackList(String query, int limit, int offset, String market) {

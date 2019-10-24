@@ -6,6 +6,7 @@ import com.github.modsezam.nitritedemo.model.spotify.track.SpotifyModelTrack;
 import com.github.modsezam.nitritedemo.service.DatabaseService;
 import com.github.modsezam.nitritedemo.service.LogService;
 import com.github.modsezam.nitritedemo.service.SpotifyService;
+import com.google.common.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -77,9 +78,8 @@ public class SpotifyController {
         logService.insertLogRecord("Get track search request from query");
         this.currentQuery = query;
 
-        ResponseEntity<ResponseWrapper<SpotifyModelTrack>> responseWrapperResponseEntity = spotifyService.makeRequest(query, SpotifyModelTrack.class);
-        ResponseWrapper<SpotifyModelTrack> body = responseWrapperResponseEntity.getBody();
-        SpotifyModelTrack response = body.getResponse();
+        ResponseWrapper<SpotifyModelTrack> spotifyModelTrackResponseWrapper = spotifyService.makeRequest2(query, SpotifyModelTrack.class);
+        SpotifyModelTrack response = spotifyModelTrackResponseWrapper.getResponse();
 
         spotifyModelResponseEntity = spotifyService.getTrackListFromQuery(query);
         if (spotifyModelResponseEntity.getStatusCode() == HttpStatus.OK ){
