@@ -6,9 +6,9 @@ An application that allows the user to search for artists and music tracks using
 The application was made in Spring Boot on the Thymeleaf template engine and additionally as the Rest API.
 
 ### technology stack
-backend: java, spring boot
-database: NoSQL nitrite database
-frontend: Thymeleaf, Bootstrap
+* backend: java, spring boot
+* database: NoSQL nitrite database
+* frontend: Thymeleaf, Bootstrap
 
 
 ### run application
