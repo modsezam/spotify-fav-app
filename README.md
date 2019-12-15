@@ -37,3 +37,15 @@ The compressed files are located in the target/slf4j/roll-by-time folder.
 ### WEB API Spotify implementation
 Communication with WEB API Spotify goes on via Client Credentials Flow path.
 The generated Tocken is stored in SpotifyTokenHolder Bean. Because it is generated for 3600 seconds, the time of tocken generation is saved and if it is exceeded a new tocken is generated.
+
+### screen shots
+screen shot 1
+![spotify-fav-app 1](https://github.com/modsezam/spotify-fav-app/blob/master/src/main/resources/images/spotify-sc-2.png)
+screen shot 2
+![spotify-fav-app 2](https://github.com/modsezam/spotify-fav-app/blob/master/src/main/resources/images/spotify-sc-3.png)
+screen shot 3
+![spotify-fav-app 3](https://github.com/modsezam/spotify-fav-app/blob/master/src/main/resources/images/spotify-sc-4.png)
+screen shot 4
+![spotify-fav-app 4](https://github.com/modsezam/spotify-fav-app/blob/master/src/main/resources/images/spotify-sc-5.png)
+screen shot documentation
+![spotify-fav-app documentaion](https://github.com/modsezam/spotify-fav-app/blob/master/src/main/resources/images/spotify-sc-1.png)
