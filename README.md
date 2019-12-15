@@ -1,5 +1,5 @@
 # spotify-fav-app
-Spotify application to search for favorite tracks and authors and save them in favorites.
+Spotify application to search for tracks and authors and save them in favorites.
 
 ### application description
 An application that allows the user to search for artists and music tracks using the WEB API Spotify. It is also saving the indicated songs / artists to the local database.
